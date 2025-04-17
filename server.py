@@ -45,7 +45,7 @@ def load_model():
 
 # Initialize the Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "chrome-extension://ocdmbopfmpdcphflkggffhkdonhijfme"}})
+CORS(app)
 
 # Function to preprocess the abstract
 def preprocess_abstract(abstract):
