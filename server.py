@@ -38,14 +38,19 @@ model = None
 def load_model():
     global model
     if model is None:
-        model = tf.keras.models.load_model(
-            "09_pubmed_rct_200k_model_final.keras",
-            custom_objects={"UniversalTextEncoder": UniversalTextEncoder}
-        )
+        print("Loading model...")
+        try:
+            model = tf.keras.models.load_model(
+                "09_pubmed_rct_200k_model_final.keras",
+                custom_objects={"UniversalTextEncoder": UniversalTextEncoder}
+            )
+            print("Model loaded successfully.")
+        except Exception as e:
+            print(f"Error loading model: {e}")
 
 # Initialize the Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Function to preprocess the abstract
 def preprocess_abstract(abstract):
@@ -111,13 +116,14 @@ def home():
 @app.route("/process", methods=["POST", "OPTIONS"])
 def process_abstract():
     if request.method == "OPTIONS":
-        # Handle preflight request
         return jsonify({"message": "CORS preflight request successful"}), 200
 
-    # Handle POST request
+    # Debugging: Log the request headers and body
+    print("Headers:", request.headers)
+    print("Body:", request.data)
+
     data = request.json
     abstract = data.get("abstract", "")
-
 
     if not abstract:
         return jsonify({"error": "No abstract provided"}), 400
@@ -126,6 +132,10 @@ def process_abstract():
     modified_abstract = make_prediction(abstract)
 
     return jsonify({"modified_abstract": modified_abstract})
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    return jsonify({"status": "healthy"}), 200
 
 # # Prevent Render app from sleeping
 # url = "https://pubmed-literature-skimmer.onrender.com"
