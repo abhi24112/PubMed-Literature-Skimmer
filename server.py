@@ -103,6 +103,10 @@ def make_prediction(abstract):
 
     return modified_abstract.strip()
 
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "PubMed Literature Skimmer API is running"}), 200
+
 # Define the API endpoint
 @app.route("/process", methods=["POST", "OPTIONS"])
 def process_abstract():
@@ -114,6 +118,7 @@ def process_abstract():
     data = request.json
     abstract = data.get("abstract", "")
 
+
     if not abstract:
         return jsonify({"error": "No abstract provided"}), 400
 
@@ -122,30 +127,30 @@ def process_abstract():
 
     return jsonify({"modified_abstract": modified_abstract})
 
-# Prevent Render app from sleeping
-url = "https://pubmed-literature-skimmer.onrender.com"
-interval = 30  # Interval in seconds (30 seconds)
+# # Prevent Render app from sleeping
+# url = "https://pubmed-literature-skimmer.onrender.com"
+# interval = 30  # Interval in seconds (30 seconds)
 
-def reload_website():
-    while True:
-        try:
-            response = requests.get(url)
-            print(f"Reloaded at {time.strftime('%Y-%m-%d %H:%M:%S')}: Status Code {response.status_code}")
-        except requests.exceptions.RequestException as e:
-            print(f"Error reloading at {time.strftime('%Y-%m-%d %H:%M:%S')}: {str(e)}")
-        time.sleep(interval)
+# def reload_website():
+#     while True:
+#         try:
+#             response = requests.get(url)
+#             print(f"Reloaded at {time.strftime('%Y-%m-%d %H:%M:%S')}: Status Code {response.status_code}")
+#         except requests.exceptions.RequestException as e:
+#             print(f"Error reloading at {time.strftime('%Y-%m-%d %H:%M:%S')}: {str(e)}")
+#         time.sleep(interval)
 
-# Start the reload function in a separate thread
-def start_reloading():
-    thread = Thread(target=reload_website)
-    thread.daemon = True
-    thread.start()
+# # Start the reload function in a separate thread
+# def start_reloading():
+#     thread = Thread(target=reload_website)
+#     thread.daemon = True
+#     thread.start()
 
 # Run the thread when the app starts
 if __name__ == "__main__":
-    with app.app_context():
-        start_reloading()
+    # with app.app_context():
+    #     start_reloading()
     
-    # Use the PORT environment variable provided by Render
+    # # Use the PORT environment variable provided by Render
     port = int(os.environ.get("PORT", 5000))  # Default to 5000 if PORT is not set
     app.run(host="0.0.0.0", port=port, debug=True)

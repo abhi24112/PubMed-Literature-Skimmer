@@ -1,9 +1,13 @@
-// filepath: c:\Users\dayaa\Desktop\pubmed_extension\background.js
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "processAbstract") {
     console.log("Received processAbstract action");
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (!tabs || tabs.length === 0) {
+        console.error("No active tab found.");
+        sendResponse({ success: false, error: "No active tab found." });
+        return;
+      }
+
       const activeTab = tabs[0];
       chrome.scripting.executeScript(
         {
@@ -15,7 +19,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           chrome.tabs.sendMessage(activeTab.id, { action: "extractAbstract" }, (response) => {
             if (response && response.abstract) {
               console.log("Extracted abstract:", response.abstract);
-              fetch("https://pubmed-literature-skimmer.onrender.com/process", {
+              fetch("http://127.0.0.1:5000/process", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json"
@@ -42,6 +46,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
       );
     });
-    sendResponse({ success: true });
+    return true; // Keep the message channel open for async response
   }
 });
