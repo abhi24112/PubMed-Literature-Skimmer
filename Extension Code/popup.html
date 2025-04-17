@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PubMed Abstract Extractor</title>
+  <style>
+    body {
+      width: 250px; /* Adjusted width */
+      height: 150px; /* Adjusted height */
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    #extractButton {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    #extractButton:hover {
+      background-color: #0056b3;
+      transform: scale(1.1); /* Slight zoom-in effect */
+    }
+
+    #extractButton:active {
+      transform: scale(0.95); /* Slight zoom-out effect on click */
+    }
+
+    .classification {
+      font-weight: bold;
+      color: #333;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">PubMed Literature Skimmer</h1>
+  <button id="extractButton">Extract Abstract</button>
+  <script src="popup.js"></script>
+</body>
+</html>

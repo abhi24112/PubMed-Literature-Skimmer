@@ -1,0 +1,102 @@
+from flask import Flask, request, jsonify
+import tensorflow as tf
+import tensorflow_hub as hub
+from spacy.lang.en import English
+from flask_cors import CORS
+
+# Define the UniversalTextEncoder layer
+class UniversalTextEncoder(tf.keras.layers.Layer):
+    def __init__(self, **kwargs):
+        super(UniversalTextEncoder, self).__init__(**kwargs)
+        self.encoder = hub.KerasLayer(
+            "https://tfhub.dev/google/universal-sentence-encoder/4",
+            trainable=False,
+            input_shape=[],
+            dtype=tf.string,
+            name="Universal_Text_Encoder"
+        )
+
+    def call(self, inputs):
+        return self.encoder(inputs)
+
+# Load the custom model
+model = tf.keras.models.load_model(
+    "09_pubmed_rct_200k_model_final.keras",
+    custom_objects={"UniversalTextEncoder": UniversalTextEncoder}
+)
+
+# Initialize the Flask app
+app = Flask(__name__)
+CORS(app)
+
+# Function to preprocess the abstract
+def preprocess_abstract(abstract):
+    nlp = English()
+    sentencizer = nlp.add_pipe("sentencizer")  # Create sentence splitting pipeline object
+    doc = nlp(abstract)
+    sentences = [str(sent) for sent in list(doc.sents)]
+
+    characters = [" ".join(list(word)) for word in sentences]
+    line_number = list(range(len(sentences)))
+    total_line = [len(sentences)] * len(sentences)
+
+    # One-hot encoding
+    line_number_one_hot = tf.one_hot(line_number, axis=1, depth=15)
+    total_line_one_hot = tf.one_hot(total_line, axis=1, depth=20)
+
+    # Convert to tensors
+    sentence_tensor = tf.constant(sentences)
+    character_tensor = tf.constant(characters)
+
+    return line_number_one_hot, total_line_one_hot, sentence_tensor, character_tensor, sentences
+
+# Function to make predictions
+def make_prediction(abstract):
+    line_number_one_hot, total_line_one_hot, sentence_tensor, character_tensor, sentences = preprocess_abstract(abstract)
+
+    # Predict using the model
+    model_pred_probs = model.predict(
+        x=(line_number_one_hot, total_line_one_hot, sentence_tensor, character_tensor),
+        verbose=0
+    )
+
+    # Convert prediction probabilities to labels
+    class_names = ['BACKGROUND', 'CONCLUSIONS', 'METHODS', 'OBJECTIVE', 'RESULTS']
+    pred = tf.argmax(model_pred_probs, axis=1)
+    pred_labels = [class_names[i] for i in pred]
+
+    # Organize predictions into sections
+    result = {}
+    for i, sentence in enumerate(sentences):
+        label = pred_labels[i]
+        if label not in result:
+            result[label] = [sentence]
+        else:
+            result[label].append(sentence)
+
+    # Format the modified abstract
+    desired_order = ['BACKGROUND', 'OBJECTIVE', 'METHODS', 'RESULTS', 'CONCLUSIONS']
+    modified_abstract = ""
+    for section in desired_order:
+        if section in result:
+            modified_abstract += f"{section.title()}:\n"
+            modified_abstract += " ".join(result[section]) + "\n\n"
+
+    return modified_abstract.strip()
+
+# Define the API endpoint
+@app.route("/process", methods=["POST"])
+def process_abstract():
+    data = request.json
+    abstract = data.get("abstract", "")
+
+    if not abstract:
+        return jsonify({"error": "No abstract provided"}), 400
+
+    # Process the abstract using the model
+    modified_abstract = make_prediction(abstract)
+
+    return jsonify({"modified_abstract": modified_abstract})
+
+if __name__ == "__main__":
+    app.run(debug=True)
