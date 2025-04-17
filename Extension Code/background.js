@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           chrome.tabs.sendMessage(activeTab.id, { action: "extractAbstract" }, (response) => {
             if (response && response.abstract) {
               console.log("Extracted abstract:", response.abstract);
-              fetch("http://127.0.0.1:5000/process", {
+              fetch("https://pubmed-literature-skimmer.onrender.com/process", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json"
@@ -23,6 +23,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 body: JSON.stringify({ abstract: response.abstract })
               })
                 .then((res) => {
+                  console.log("Fetch response status:", res.status); // Log the response status
                   if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                   }

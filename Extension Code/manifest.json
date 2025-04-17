@@ -3,7 +3,7 @@
   "name": "PubMed Abstract Modifier",
   "version": "1.0",
   "description": "Extracts and modifies PubMed abstracts using a deep learning model.",
-  "permissions": ["scripting", "activeTab"],
+  "permissions": ["scripting", "activeTab","tabs"],
   "host_permissions": ["https://pubmed.ncbi.nlm.nih.gov/"],
   "background": {
     "service_worker": "background.js"

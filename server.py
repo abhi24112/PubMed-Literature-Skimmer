@@ -1,5 +1,8 @@
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU usage for TensorFlow
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"]= "0"
+
 
 from flask import Flask, request, jsonify
 import tensorflow as tf
@@ -42,7 +45,7 @@ def load_model():
 
 # Initialize the Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Function to preprocess the abstract
 def preprocess_abstract(abstract):
@@ -115,7 +118,7 @@ def process_abstract():
     return jsonify({"modified_abstract": modified_abstract})
 
 # Prevent Render app from sleeping
-url = "https://loan-approval-prediction-jc8r.onrender.com"  # Replace with your Render URL
+url = "https://pubmed-literature-skimmer.onrender.com"
 interval = 30  # Interval in seconds (30 seconds)
 
 def reload_website():
