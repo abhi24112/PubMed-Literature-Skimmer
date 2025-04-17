@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "PubMed Abstract Modifier",
+  "version": "1.0",
+  "description": "Extracts and modifies PubMed abstracts using a deep learning model.",
+  "permissions": ["scripting", "activeTab","tabs"],
+  "host_permissions": ["https://pubmed.ncbi.nlm.nih.gov/"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  }
+}
