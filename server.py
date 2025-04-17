@@ -45,7 +45,7 @@ def load_model():
 
 # Initialize the Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "chrome-extension://ocdmbopfmpdcphflkggffhkdonhijfme"}})
 
 # Function to preprocess the abstract
 def preprocess_abstract(abstract):
@@ -104,8 +104,13 @@ def make_prediction(abstract):
     return modified_abstract.strip()
 
 # Define the API endpoint
-@app.route("/process", methods=["POST"])
+@app.route("/process", methods=["POST", "OPTIONS"])
 def process_abstract():
+    if request.method == "OPTIONS":
+        # Handle preflight request
+        return jsonify({"message": "CORS preflight request successful"}), 200
+
+    # Handle POST request
     data = request.json
     abstract = data.get("abstract", "")
 
