@@ -52,6 +52,11 @@ def load_model():
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+# Load the model when the server starts
+print("Initializing server...")
+load_model()
+print("Server initialized successfully.")
+
 # Function to preprocess the abstract
 def preprocess_abstract(abstract):
     nlp = English()
