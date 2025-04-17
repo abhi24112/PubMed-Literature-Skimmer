@@ -3,6 +3,9 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from spacy.lang.en import English
 from flask_cors import CORS
+import requests
+import time
+from threading import Thread
 
 # Define the UniversalTextEncoder layer
 class UniversalTextEncoder(tf.keras.layers.Layer):
@@ -98,5 +101,27 @@ def process_abstract():
 
     return jsonify({"modified_abstract": modified_abstract})
 
+# Prevent Render app from sleeping
+url = "https://loan-approval-prediction-jc8r.onrender.com"  # Replace with your Render URL
+interval = 30  # Interval in seconds (30 seconds)
+
+def reload_website():
+    while True:
+        try:
+            response = requests.get(url)
+            print(f"Reloaded at {time.strftime('%Y-%m-%d %H:%M:%S')}: Status Code {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error reloading at {time.strftime('%Y-%m-%d %H:%M:%S')}: {str(e)}")
+        time.sleep(interval)
+
+# Start the reload function in a separate thread
+def start_reloading():
+    thread = Thread(target=reload_website)
+    thread.daemon = True
+    thread.start()
+
+# Run the thread when the app starts
 if __name__ == "__main__":
+    with app.app_context():
+        start_reloading()
     app.run(debug=True)
