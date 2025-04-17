@@ -1,3 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU usage for TensorFlow
+
 from flask import Flask, request, jsonify
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -23,10 +26,19 @@ class UniversalTextEncoder(tf.keras.layers.Layer):
         return self.encoder(inputs)
 
 # Load the custom model
-model = tf.keras.models.load_model(
-    "09_pubmed_rct_200k_model_final.keras",
-    custom_objects={"UniversalTextEncoder": UniversalTextEncoder}
-)
+# model = tf.keras.models.load_model(
+#     "09_pubmed_rct_200k_model_final.keras",
+#     custom_objects={"UniversalTextEncoder": UniversalTextEncoder}
+# )
+model = None
+
+def load_model():
+    global model
+    if model is None:
+        model = tf.keras.models.load_model(
+            "09_pubmed_rct_200k_model_final.keras",
+            custom_objects={"UniversalTextEncoder": UniversalTextEncoder}
+        )
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -55,6 +67,7 @@ def preprocess_abstract(abstract):
 
 # Function to make predictions
 def make_prediction(abstract):
+    load_model()
     line_number_one_hot, total_line_one_hot, sentence_tensor, character_tensor, sentences = preprocess_abstract(abstract)
 
     # Predict using the model
@@ -124,4 +137,7 @@ def start_reloading():
 if __name__ == "__main__":
     with app.app_context():
         start_reloading()
-    app.run(debug=True)
+    
+    # Use the PORT environment variable provided by Render
+    port = int(os.environ.get("PORT", 5000))  # Default to 5000 if PORT is not set
+    app.run(host="0.0.0.0", port=port, debug=True)
