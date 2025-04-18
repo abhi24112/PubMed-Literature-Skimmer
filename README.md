@@ -4,6 +4,10 @@
 
 ---
 
+## Introduction Video
+<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7318934203155247104?compact=1" height="399" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+---
+
 ## Features
 
 - Extracts abstracts from PubMed articles.
@@ -22,30 +26,35 @@
    ```
 2. Open Chrome and navigate to `chrome://extensions/`.
 3. Enable **Developer mode** (toggle in the top-right corner).
-4. Click **Load unpacked** and select the project folder.
+4. Click **Load unpacked** and select the (Extension Code folder only).
 
 ---
 
 ## Usage
-
-1. Open a PubMed article in your browser.
-2. Click the **PubMed Literature Skimmer** extension icon in the toolbar.
-3. In the popup UI, click the **Extract Abstract** button.
-4. The abstract will be processed and reformatted with bold headings directly on the PubMed page.
+1. Run the Flask Api by
+ ```bash
+    python server.py
+```
+2. Open a PubMed article in your browser.
+3. Click the **PubMed Literature Skimmer** extension icon in the toolbar.
+4. In the popup UI, click the **Extract Abstract** button.
+5. The abstract will be processed and reformatted with bold headings directly on the PubMed page.
 
 ---
 
 ## Project Structure
 
 ```
-pubmed_extension/
-├── background.js       # Handles communication between the content script and the Flask server
-├── content.js          # Extracts and replaces abstracts on the PubMed page
-├── popup.html          # UI for the Chrome extension
-├── popup.js            # Handles UI interactions
-├── server.py           # Flask server for processing abstracts using a machine learning model
-├── manifest.json       # Chrome extension manifest file
-└── README.md           # Project documentation
+PubMed-Literature-Skimmer/
+├── server.py                                # Flask server for processing abstracts using a machine learning model
+├── 09_pubmed_rct_200k_model_final.keras     # Model 
+├──pubmed_extension/
+   ├── background.js       # Handles communication between the content script and the Flask server
+   ├── content.js          # Extracts and replaces abstracts on the PubMed page
+   ├── popup.html          # UI for the Chrome extension
+   ├── popup.js            # Handles UI interactions  
+   ├── manifest.json       # Chrome extension manifest file
+   └── README.md           # Project documentation
 ```
 
 ---
@@ -69,6 +78,7 @@ To add a heading "PubMed Literature Skimmer" to the extension UI, update the pop
 - Python 3.8 or higher
 - Flask
 - TensorFlow
+- Scapy
 - Chrome browser
 
 ---
@@ -77,7 +87,7 @@ To add a heading "PubMed Literature Skimmer" to the extension UI, update the pop
 
 1. Navigate to the project directory:
    ```bash
-   cd pubmed_extension
+   cd PubMed-Literature-Skimmer
    ```
 2. Install the required Python packages:
    ```bash
