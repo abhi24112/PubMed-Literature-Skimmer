@@ -1,17 +1,15 @@
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU usage for TensorFlow
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"]= "0"
 
-
+# Importing all libraries
 from flask import Flask, request, jsonify
 import tensorflow as tf
 import tensorflow_hub as hub
 from spacy.lang.en import English
 from flask_cors import CORS
-import requests
-import time
-from threading import Thread
+
 
 # Define the UniversalTextEncoder layer
 class UniversalTextEncoder(tf.keras.layers.Layer):
@@ -122,10 +120,6 @@ def home():
 def process_abstract():
     if request.method == "OPTIONS":
         return jsonify({"message": "CORS preflight request successful"}), 200
-
-    # Debugging: Log the request headers and body
-    print("Headers:", request.headers)
-    print("Body:", request.data)
 
     data = request.json
     abstract = data.get("abstract", "")
