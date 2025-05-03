@@ -48,7 +48,7 @@ def load_model():
 
 # Initialize the Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 # Load the model when the server starts
 print("Initializing server...")

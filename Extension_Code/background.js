@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               console.log("Extracted abstract:", response.abstract);
 
               // Simulate sending the abstract to the server and receiving a response
-              fetch("https://47bb-103-176-64-102.ngrok-free.app/process", {
+              fetch("https://diverse-meerkat-precise.ngrok-free.app/process", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ abstract: response.abstract })
