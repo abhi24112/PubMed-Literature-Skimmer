@@ -16,7 +16,7 @@ class UniversalTextEncoder(tf.keras.layers.Layer):
     def __init__(self, **kwargs):
         super(UniversalTextEncoder, self).__init__(**kwargs)
         self.encoder = hub.KerasLayer(
-            "https://tfhub.dev/google/universal-sentence-encoder/4",
+            "https://www.kaggle.com/models/google/universal-sentence-encoder/TensorFlow2/universal-sentence-encoder/2",
             trainable=False,
             input_shape=[],
             dtype=tf.string,

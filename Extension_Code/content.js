@@ -2,15 +2,52 @@
 function extractAbstract() {
   const abstractElement = document.querySelector('.abstract-content');
   if (abstractElement) {
+    // Add a CSS class to animate the text while processing
+    abstractElement.classList.add('processing-animation');
     return abstractElement.innerText;
   }
   return null;
 }
 
-// Replace the abstract with the new one, adding bold headings
+// Inject CSS for the animation
+const style = document.createElement('style');
+style.innerHTML = `
+  .processing-animation {
+    background: linear-gradient(90deg, rgba(240, 240, 240, 0.5) 25%, rgba(200, 200, 200, 0.5) 50%, rgba(240, 240, 240, 0.5) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite, scaleUp 1.5s infinite alternate;
+    color: transparent; /* Hide the text during animation */
+    -webkit-background-clip: text; /* Clip the gradient to the text */
+    background-clip: text;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes scaleUp {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.05);
+    }
+  }
+`;
+document.head.appendChild(style);
+
+// Replace the abstract with the new one, removing the animation
 function replaceAbstract(newAbstract) {
   const abstractElement = document.querySelector('.abstract-content');
   if (abstractElement) {
+    // Remove the animation class
+    abstractElement.classList.remove('processing-animation');
+
     // Split the modified abstract into sections
     const sections = newAbstract.split("\n\n");
 
@@ -19,11 +56,9 @@ function replaceAbstract(newAbstract) {
     sections.forEach((section) => {
       const splitIndex = section.indexOf(":");
       if (splitIndex !== -1) {
-        const heading = section.substring(0, splitIndex).trim();
-        const content = section.substring(splitIndex + 1).trim();
-        if (heading && content) {
-          formattedAbstract += `<p><strong>${heading}:</strong> ${content}</p>`;
-        }
+        const heading = section.slice(0, splitIndex + 1);
+        const content = section.slice(splitIndex + 1).trim();
+        formattedAbstract += `<p><strong>${heading}</strong> ${content}</p>`;
       }
     });
 
