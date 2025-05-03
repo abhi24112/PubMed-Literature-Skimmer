@@ -13,7 +13,7 @@ function extractAbstract() {
 const style = document.createElement('style');
 style.innerHTML = `
   .processing-animation {
-    background: linear-gradient(90deg, rgba(240, 240, 240, 0.5) 25%, rgba(200, 200, 200, 0.5) 50%, rgba(240, 240, 240, 0.5) 75%);
+    background: linear-gradient(90deg, rgba(89, 82, 82, 0.53) 25%, rgba(200, 200, 200, 0.5) 50%, rgba(240, 240, 240, 0.65) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite, scaleUp 1.5s infinite alternate;
     color: transparent; /* Hide the text during animation */
