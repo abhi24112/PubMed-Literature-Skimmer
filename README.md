@@ -34,14 +34,24 @@
 ---
 
 ## Usage
-1. Run the Flask Api by
- ```bash
-    python server.py
-```
-2. Open a PubMed article in your browser.
-3. Click the **PubMed Literature Skimmer** extension icon in the toolbar.
-4. In the popup UI, click the **Extract Abstract** button.
-5. The abstract will be processed and reformatted with bold headings directly on the PubMed page.
+
+### Running the Flask Server
+
+1. Navigate to the project directory:
+   ```bash
+   cd PubMed-Literature-Skimmer
+   ```
+2. Install the required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Start the Flask server:
+   ```bash
+   python server.py
+   ```
+4. Open the PubMed article which you want to skim.
+5. Then click the extension.
+6. Boom!.. the abstract is now skimmed.
 
 ---
 
@@ -83,23 +93,6 @@ To add a heading "PubMed Literature Skimmer" to the extension UI, update the pop
 - TensorFlow
 - Scapy
 - Chrome browser
-
----
-
-## Running the Flask Server
-
-1. Navigate to the project directory:
-   ```bash
-   cd PubMed-Literature-Skimmer
-   ```
-2. Install the required Python packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Start the Flask server:
-   ```bash
-   python server.py
-   ```
 
 ---
 
