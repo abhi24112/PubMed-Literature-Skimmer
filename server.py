@@ -115,6 +115,8 @@ def make_prediction(abstract):
 def home():
     return jsonify({"message": "PubMed Literature Skimmer API is running"}), 200
 
+temp_storage ={}
+
 # Define the API endpoint
 @app.route("/process", methods=["POST", "OPTIONS"])
 def process_abstract():
@@ -122,44 +124,40 @@ def process_abstract():
         return jsonify({"message": "CORS preflight request successful"}), 200
 
     data = request.json
-    abstract = data.get("abstract", "")
+    print("Received data:", data)  # Debug log
+    link = data.get("link", "")  # Get the link from the request
+    abstract = data.get("abstract", "")  # Get the abstract from the request
+    print("Link:", link)
+    print("Abstract:", abstract)
+    print("Temp storage:", temp_storage)
 
-    if not abstract:
-        return jsonify({"error": "No abstract provided"}), 400
+    # If no link is provided, return an error
+    if not link:
+        return jsonify({"error": "No link provided"}), 400
+
+    # If no abstract is provided and the link is not in storage, return an error
+    if not abstract and link not in temp_storage:
+        return jsonify({"error": "No abstract provided and link not found in storage"}), 400
+
+    # Check if the link is already stored
+    if link in temp_storage:
+        print(f"Link already exists: {link}")
+        stored_abstract = temp_storage[link]
+        print(f"Using stored abstract for link: {link}")
+    else:
+        # Store the link and abstract in temporary storage
+        temp_storage[link] = abstract
+        stored_abstract = abstract
+        print(f"Stored new link and abstract: {link}")
 
     # Process the abstract using the model
-    modified_abstract = make_prediction(abstract)
+    print("Processing abstract...")
+    modified_abstract = make_prediction(stored_abstract)
 
-    return jsonify({"modified_abstract": modified_abstract})
+    return jsonify({"modified_abstract": modified_abstract, "link": link})
 
-@app.route("/health", methods=["GET"])
-def health_check():
-    return jsonify({"status": "healthy"}), 200
-
-# # Prevent Render app from sleeping
-# url = "https://pubmed-literature-skimmer.onrender.com"
-# interval = 30  # Interval in seconds (30 seconds)
-
-# def reload_website():
-#     while True:
-#         try:
-#             response = requests.get(url)
-#             print(f"Reloaded at {time.strftime('%Y-%m-%d %H:%M:%S')}: Status Code {response.status_code}")
-#         except requests.exceptions.RequestException as e:
-#             print(f"Error reloading at {time.strftime('%Y-%m-%d %H:%M:%S')}: {str(e)}")
-#         time.sleep(interval)
-
-# # Start the reload function in a separate thread
-# def start_reloading():
-#     thread = Thread(target=reload_website)
-#     thread.daemon = True
-#     thread.start()
 
 # Run the thread when the app starts
 if __name__ == "__main__":
-    # with app.app_context():
-    #     start_reloading()
-    
-    # # Use the PORT environment variable provided by Render
     port = int(os.environ.get("PORT", 5000))  # Default to 5000 if PORT is not set
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=True)
